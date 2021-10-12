@@ -14,11 +14,11 @@ namespace ColorBot.App.Commands
             
             if (colorRoles.Length == 0)
             {
-                await ReplyAsync("There are no color roles currently in use.");
+                await ReplyAsync($"{Mention} There are no color roles currently in use.");
             }
             else
             {
-                var message = $"The following color roles are currently in use:";
+                var message = $"{Mention} The following color roles are currently in use:";
                 
                 message = colorRoles.Aggregate(message, (current, role) =>
                     current + $"{Environment.NewLine}  • {role.Name} - {role.Members.Count()} user(s)");
