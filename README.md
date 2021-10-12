@@ -23,3 +23,15 @@ Want to pull the latest Docker image to host your own instance of ColorBot?
 | `colorbot set "color name or hex value"` | Applies a role based on the hex value to the user |
 | `colorbot list` | Lists all currently used color roles |
 | `colorbot clean` | Removes empty color roles |
+
+---
+
+## Screenshots
+
+![image](/Documentation/Images/user.png)
+
+![image](/Documentation/Images/set.png)
+
+![image](/Documentation/Images/list.png)
+
+![image](/Documentation/Images/clean.png)
