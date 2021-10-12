@@ -5,9 +5,15 @@ Built with .NET Core 3.1 and Docker.
 
 ---
 
-Want to invite DogBot to your own Discord?
+Want to invite ColorBot to your own Discord?
 
 [https://discord.com/oauth2/authorize?client_id=897551401369100358&scope=bot&permissions=8](https://discord.com/oauth2/authorize?client_id=896828930798022657&scope=bot&permissions=534723951680)
+
+---
+
+Want to pull the latest Docker image to host your own instance of ColorBot?
+
+[https://hub.docker.com/r/sgarberg/colorbot](https://hub.docker.com/r/sgarberg/colorbot)
 
 ## Commands
 | Command | Description |
