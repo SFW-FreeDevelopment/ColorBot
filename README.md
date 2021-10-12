@@ -18,7 +18,6 @@ Want to pull the latest Docker image to host your own instance of ColorBot?
 ## Commands
 | Command | Description |
 | ------------- | ------------- |
-| `colorbot help` | Assists the user by displaying all commands |
 | `colorbot ping` | Pings the Discord channel |
 | `colorbot set "color name or hex value"` | Applies a role based on the hex value to the user |
 | `colorbot list` | Lists all currently used color roles |
