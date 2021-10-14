@@ -20,6 +20,7 @@ Want to pull the latest Docker image to host your own instance of ColorBot?
 | ------------- | ------------- |
 | `colorbot help` | Assists the user by displaying all commands |
 | `colorbot ping` | Pings the Discord channel |
+| `colorbot konami` | Displays the Konami code as emojis |
 | `colorbot set "name or hex value"` | Updates user color via role |
 | `colorbot list` | Lists all currently used color roles |
 | `colorbot clean` | Removes empty color roles |
