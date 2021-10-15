@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -10,7 +11,21 @@ namespace ColorBot.App.Commands
         [Command("set")]
         public async Task HandleCommandAsync(string value)
         {
-            if (!TryParseColor(value, out var color, out var colorHex))
+            var isRandom = string.Equals(value, "random", StringComparison.OrdinalIgnoreCase);
+
+            System.Drawing.Color color;
+            string colorHex;
+            if (isRandom)
+            {
+                var random = new Random();
+                color = System.Drawing.Color.FromArgb(
+                    (byte)random.Next(0, 256),
+                    (byte)random.Next(0, 256),
+                    (byte)random.Next(0, 256)
+                );
+                colorHex = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+            }
+            else if (!TryParseColor(value, out color, out colorHex))
             {
                 await ReplyAsync($"{Mention} Color could not be parsed from input. Please try again.");
                 return;
