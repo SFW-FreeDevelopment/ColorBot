@@ -7,12 +7,16 @@ using ColorBot.App.Models;
 
 namespace ColorBot.App.Repositories
 {
-    public static class LogMessageRepository
+    public class LogMessageRepository
     {
-        // TODO: Assign this
-        private static readonly ColorBotContext _context;
+        private readonly ColorBotContext _context;
 
-        public static async Task<LogMessage> CreateAsync(LogMessage logMessage)
+        public LogMessageRepository(ColorBotContext context)
+        {
+            _context = context;
+        }
+        
+        public async Task<LogMessage> CreateAsync(LogMessage logMessage)
         {
             logMessage.CreatedAt = DateTime.UtcNow;
             _context.LogMessages.Add(logMessage);
@@ -20,22 +24,22 @@ namespace ColorBot.App.Repositories
             return logMessage;
         }
 
-        public static async Task<LogMessage> GetByIdAsync(int id)
+        public async Task<LogMessage> GetByIdAsync(int id)
         {
             return await _context.LogMessages.FindAsync(id);
         }
         
-        public static async Task<List<LogMessage>> GetAllAsync()
+        public async Task<List<LogMessage>> GetAllAsync()
         {
             return await _context.LogMessages.ToListAsync();
         }
 
-        public static async Task<LogMessage> GetByAuthorAsync(string username)
+        public async Task<LogMessage> GetByAuthorAsync(string username)
         {
-            return await _context.LogMessages.FirstOrDefaultAsync(logMessage => logMessage.Author == username);
+            return await _context.LogMessages.FirstOrDefaultAsync(logMessage => logMessage.AuthorName == username);
         }
         
-        public static async Task<LogMessage> GetByCommandAsync(string command)
+        public async Task<LogMessage> GetByCommandAsync(string command)
         {
             return await _context.LogMessages.FirstOrDefaultAsync(logMessage => logMessage.Command == command);
         }

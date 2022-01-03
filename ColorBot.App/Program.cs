@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using ColorBot.App.Database;
+using ColorBot.App.Repositories;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ColorBot.App
@@ -22,11 +25,16 @@ namespace ColorBot.App
 
         public static async Task RunBotAsync()
         {
+            var connectionString = "Host=localhost;Port=5400;Database=colorbot;Username=admin;Password=password";
+            
             _client = new DiscordSocketClient();
             _commands = new CommandService();
             _services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
+                .AddScoped<LogMessageRepository>()
+                .AddDbContext<ColorBotContext>(options =>
+                    options.UseNpgsql(connectionString))
                 .BuildServiceProvider();
 
             const string token = "REPLACE_ME";
