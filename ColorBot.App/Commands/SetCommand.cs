@@ -12,6 +12,7 @@ namespace ColorBot.App.Commands
         public async Task HandleCommandAsync(string value)
         {
             var isRandom = string.Equals(value, "random", StringComparison.OrdinalIgnoreCase);
+            var tryForceSet = value.Contains("force");
 
             System.Drawing.Color color;
             string colorHex;
@@ -31,29 +32,48 @@ namespace ColorBot.App.Commands
                 return;
             }
 
-            var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == colorHex);
-            if (role != null)
+            if (tryForceSet)
             {
-                if (role.Members.Select(m => m.Id).Contains(Context.Message.Author.Id))
+                try
                 {
-                    await ReplyAsync($"{Mention} You are already the color {colorHex}.");
-                    return;
+                    var remainingCommand = value.Split("force")[1];
+                    var commandParts = remainingCommand.Split("#");
+                    var commandUsername = commandParts[0].Trim();
+                    Console.WriteLine($"Command Username: {commandUsername}");
+                    var commandColor = commandParts[1].Trim();
+                    Console.WriteLine($"Command Color: {commandColor}");
                 }
-
-                await RemoveUserFromColorRoles();
-                await GuildUser.AddRoleAsync(role);
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message + e.StackTrace);
+                }
             }
             else
             {
-                var createdRole = await Context.Guild.CreateRoleAsync(colorHex, GuildPermissions.None,
-                    new Color(color.R, color.G, color.B), false, false);
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == colorHex);
+                if (role != null)
+                {
+                    if (role.Members.Select(m => m.Id).Contains(Context.Message.Author.Id))
+                    {
+                        await ReplyAsync($"{Mention} You are already the color {colorHex}.");
+                        return;
+                    }
+
+                    await RemoveUserFromColorRoles();
+                    await GuildUser.AddRoleAsync(role);
+                }
+                else
+                {
+                    var createdRole = await Context.Guild.CreateRoleAsync(colorHex, GuildPermissions.None,
+                        new Color(color.R, color.G, color.B), false, false);
                 
-                await RemoveUserFromColorRoles();
-                await GuildUser.AddRoleAsync(createdRole);
-            }
+                    await RemoveUserFromColorRoles();
+                    await GuildUser.AddRoleAsync(createdRole);
+                }
             
-            await RemoveEmptyRoles();
-            await ReplyAsync($"{Mention} Your color has been updated to {colorHex}!");
+                await RemoveEmptyRoles();
+                await ReplyAsync($"{Mention} Your color has been updated to {colorHex}!");
+            }
         }
 
         private static bool TryParseColor(string value, out System.Drawing.Color color, out string colorHex)
