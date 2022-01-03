@@ -17,8 +17,17 @@ namespace ColorBot.App.Commands
 
             System.Drawing.Color color;
             string colorHex;
-            
-            if (tryForceSet)
+
+            if (!tryForceSet)
+            {
+                var colorTuple = await TryDetermineColor(value, isRandom);
+                color = colorTuple.color;
+                colorHex = colorTuple.colorHex;
+                if (colorHex == null) return;
+
+                await UpdateRole(color, colorHex, GuildUser, false);
+            }
+            else
             {
                 try
                 {
@@ -30,100 +39,28 @@ namespace ColorBot.App.Commands
                     Console.WriteLine($"Command Username: {commandUsername}");
                     var commandColor = commandParts[1].Trim();
                     Console.WriteLine($"Command Color: {commandColor}");
-                    
-                    if (isRandom)
-                    {
-                        var random = new Random();
-                        color = System.Drawing.Color.FromArgb(
-                            (byte)random.Next(0, 256),
-                            (byte)random.Next(0, 256),
-                            (byte)random.Next(0, 256)
-                        );
-                        colorHex = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
-                    }
-                    else if (!TryParseColor(commandColor, out color, out colorHex))
-                    {
-                        await ReplyAsync($"{Mention} Color could not be parsed from input. Please try again.");
-                        return;
-                    }
+
+                    isRandom = string.Equals(commandColor, "random", StringComparison.OrdinalIgnoreCase);
+
+                    var colorTuple = await TryDetermineColor(commandColor, isRandom);
+                    color = colorTuple.color;
+                    colorHex = colorTuple.colorHex;
+                    if (colorHex == null) return;
 
                     var targetUser = Context.Guild.Users.FirstOrDefault(u => u.Username == commandUsername);
                     if (targetUser == null)
                     {
                         throw new ArgumentException("Attempted to force set color of a user that could not be found.");
                     }
-                    var targetGuildUser = (IGuildUser)targetUser;
-                    
-                    var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == colorHex);
-                    if (role != null)
-                    {
-                        if (role.Members.Select(m => m.Id).Contains(Context.Message.Author.Id))
-                        {
-                            await ReplyAsync($"{Mention} {targetGuildUser.Username} is already the color {colorHex}.");
-                            return;
-                        }
 
-                        await RemoveUserFromColorRoles(targetGuildUser);
-                        await targetGuildUser.AddRoleAsync(role);
-                    }
-                    else
-                    {
-                        var createdRole = await Context.Guild.CreateRoleAsync(colorHex, GuildPermissions.None,
-                            new Color(color.R, color.G, color.B), false, false);
-                
-                        await RemoveUserFromColorRoles(targetGuildUser);
-                        await targetGuildUser.AddRoleAsync(createdRole);
-                    }
-                    
-                    await RemoveEmptyRoles();
-                    await ReplyAsync($"{Mention} {targetGuildUser.Username}'s color has been updated to {colorHex}!");
+                    var targetGuildUser = (IGuildUser)targetUser;
+
+                    await UpdateRole(color, colorHex, targetGuildUser, true);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message + e.StackTrace);
                 }
-            }
-            else
-            {
-                if (isRandom)
-                {
-                    var random = new Random();
-                    color = System.Drawing.Color.FromArgb(
-                        (byte)random.Next(0, 256),
-                        (byte)random.Next(0, 256),
-                        (byte)random.Next(0, 256)
-                    );
-                    colorHex = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
-                }
-                else if (!TryParseColor(value, out color, out colorHex))
-                {
-                    await ReplyAsync($"{Mention} Color could not be parsed from input. Please try again.");
-                    return;
-                }
-                
-                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == colorHex);
-                if (role != null)
-                {
-                    if (role.Members.Select(m => m.Id).Contains(Context.Message.Author.Id))
-                    {
-                        await ReplyAsync($"{Mention} You are already the color {colorHex}.");
-                        return;
-                    }
-
-                    await RemoveUserFromColorRoles();
-                    await GuildUser.AddRoleAsync(role);
-                }
-                else
-                {
-                    var createdRole = await Context.Guild.CreateRoleAsync(colorHex, GuildPermissions.None,
-                        new Color(color.R, color.G, color.B), false, false);
-                
-                    await RemoveUserFromColorRoles();
-                    await GuildUser.AddRoleAsync(createdRole);
-                }
-            
-                await RemoveEmptyRoles();
-                await ReplyAsync($"{Mention} Your color has been updated to {colorHex}!");
             }
         }
 
@@ -171,6 +108,60 @@ namespace ColorBot.App.Commands
             {
                 await role.DeleteAsync();
             }
+        }
+
+        private async Task UpdateRole(System.Drawing.Color color, string colorHex, IGuildUser guildUser, bool isForceUpdate)
+        {
+            var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == colorHex);
+            if (role != null)
+            {
+                if (role.Members.Select(m => m.Id).Contains(Context.Message.Author.Id))
+                {
+                    await ReplyAsync(isForceUpdate
+                        ? $"{Mention} {guildUser.Username} is already the color {colorHex}."
+                        : $"{Mention} You are already the color {colorHex}.");
+                    return;
+                }
+
+                await RemoveUserFromColorRoles(guildUser);
+                await guildUser.AddRoleAsync(role);
+            }
+            else
+            {
+                var createdRole = await Context.Guild.CreateRoleAsync(colorHex, GuildPermissions.None,
+                    new Color(color.R, color.G, color.B), false, false);
+                
+                await RemoveUserFromColorRoles(guildUser);
+                await guildUser.AddRoleAsync(createdRole);
+            }
+                    
+            await RemoveEmptyRoles();
+            await ReplyAsync(isForceUpdate
+                ? $"{Mention} {guildUser.Username}'s color has been updated to {colorHex}! {guildUser.Mention}"
+                : $"{Mention} Your color has been updated to {colorHex}!");
+        }
+
+        private async Task<(System.Drawing.Color color, string colorHex)> TryDetermineColor(string value, bool isRandom)
+        {
+            System.Drawing.Color color;
+            string colorHex;
+            
+            if (isRandom)
+            {
+                var random = new Random();
+                color = System.Drawing.Color.FromArgb(
+                    (byte)random.Next(0, 256),
+                    (byte)random.Next(0, 256),
+                    (byte)random.Next(0, 256)
+                );
+                colorHex = $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+                return (color, colorHex);
+            }
+            else if (!TryParseColor(value, out color, out colorHex))
+            {
+                await ReplyAsync($"{Mention} Color could not be parsed from input. Please try again.");
+            }
+            return (default, null);
         }
     }
 }
