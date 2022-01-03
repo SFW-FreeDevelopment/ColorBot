@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ColorBot.App.Database;
 using ColorBot.App.Models;
 
@@ -7,33 +8,34 @@ namespace ColorBot.App.Repositories
 {
     public static class LogMessageRepository
     {
+        // TODO: Assign this
         private static readonly ColorBotContext _context;
 
-        public static LogMessage Create(LogMessage logMessage)
+        public static async Task<LogMessage> CreateAsync(LogMessage logMessage)
         {
             _context.LogMessages.Add(logMessage);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return logMessage;
         }
 
-        public static LogMessage GetById(int id)
+        public static async Task<LogMessage> GetByIdAsync(int id)
         {
-            return _context.LogMessages.Find(id);
+            return await _context.LogMessages.FindAsync(id);
         }
         
-        public static List<LogMessage> GetAll()
+        public static async Task<List<LogMessage>> GetAllAsync()
         {
-            return _context.LogMessages.ToList();
+            return await _context.LogMessages.ToListAsync();
         }
 
-        public static LogMessage GetByAuthor(string username)
+        public static async Task<LogMessage> GetByAuthorAsync(string username)
         {
-            return _context.LogMessages.FirstOrDefault(logMessage => logMessage.Author == username);
+            return await _context.LogMessages.FirstOrDefaultAsync(logMessage => logMessage.Author == username);
         }
         
-        public static LogMessage GetByCommand(string command)
+        public static async Task<LogMessage> GetByCommandAsync(string command)
         {
-            return _context.LogMessages.FirstOrDefault(logMessage => logMessage.Command == command);
+            return await _context.LogMessages.FirstOrDefaultAsync(logMessage => logMessage.Command == command);
         }
     }
 }
