@@ -13,9 +13,9 @@ namespace ColorBot.App.Commands
         protected IGuildUser GuildUser => (IGuildUser)User;
         protected string Mention => User.Mention;
 
-        public async Task Log(LogMessage logMessage)
+        public async Task Log(string message, string command, string subCommand = null)
         {
-            await LogMessageRepository.CreateAsync(logMessage);
+            await LogMessageRepository.CreateAsync(new LogMessage(Context, message, command, subCommand));
         }
     }
 }
