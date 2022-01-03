@@ -1,0 +1,10 @@
+services:
+  colorbot.db:
+    image: postgres:12
+    ports:
+      - "5400:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=colorbot
+    container_name: colorbot.db
