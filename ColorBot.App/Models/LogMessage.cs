@@ -8,13 +8,15 @@ namespace ColorBot.App.Models
     public class LogMessage
     {
         public int Id { get; set; }
+        public ulong MessageId { get; set; }
         public string Message { get; set; }
         public string Command { get; set; }
         public string SubCommand { get; set; }
-        public string Author { get; set; }
-        public string ServerId { get; set; }
+        public ulong AuthorId { get; set; }
+        public string AuthorName { get; set; }
+        public ulong ServerId { get; set; }
         public string ServerName { get; set; }
-        public string ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
         public string ChannelName { get; set; }
         [NotMapped] public List<string> Mentions { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -23,12 +25,14 @@ namespace ColorBot.App.Models
 
         public LogMessage(SocketCommandContext context, string message, string command, string subCommand = null)
         {
-            Author = context.User.Username;
-            ServerId = context.Guild.Id.ToString();
+            MessageId = context.Message.Id;
+            AuthorId = context.User.Id;
+            AuthorName = context.User.Username;
+            ServerId = context.Guild.Id;
             ServerName = context.Guild.Name;
-            ChannelId = context.Channel.Id.ToString();
+            ChannelId = context.Channel.Id;
             ChannelName = context.Channel.Name;
-            Message = message;
+            Message = context.Message.Content;
             Command = command;
             SubCommand = subCommand;
         }
