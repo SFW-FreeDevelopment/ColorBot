@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ColorBot.App.Repositories;
 using Discord.Commands;
 
 namespace ColorBot.App.Commands
 {
     public class HelpCommand : CommandBase
     {
+        public HelpCommand(LogMessageRepository logMessageRepository) : base(logMessageRepository)
+        {
+        }
+        
         [Command("help")]
         public async Task HandleCommandAsync()
         {

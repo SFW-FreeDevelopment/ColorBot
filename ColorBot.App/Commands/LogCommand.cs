@@ -7,8 +7,12 @@ namespace ColorBot.App.Commands
 {
     public class LogCommand : CommandBase
     {
+        public LogCommand(LogMessageRepository logMessageRepository) : base(logMessageRepository)
+        {
+        }
+        
         [Command("log")]
-        public async Task HandleCommandAsync(string value)
+        public async Task HandleCommandAsync([Remainder] string value)
         {
             await Log(value, "log");
         }

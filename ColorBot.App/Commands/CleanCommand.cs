@@ -1,11 +1,16 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using ColorBot.App.Repositories;
 using Discord.Commands;
 
 namespace ColorBot.App.Commands
 {
     public class CleanCommand : CommandBase
     {
+        public CleanCommand(LogMessageRepository logMessageRepository) : base(logMessageRepository)
+        {
+        }
+        
         [Command("clean")]
         public async Task HandleCommandAsync()
         {

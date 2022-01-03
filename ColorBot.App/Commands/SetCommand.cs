@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ColorBot.App.Repositories;
 using Discord;
 using Discord.Commands;
 
@@ -8,6 +9,10 @@ namespace ColorBot.App.Commands
 {
     public class SetCommand : CommandBase
     {
+        public SetCommand(LogMessageRepository logMessageRepository) : base(logMessageRepository)
+        {
+        }
+        
         [Command("set")]
         public async Task HandleCommandAsync(string value)
         {

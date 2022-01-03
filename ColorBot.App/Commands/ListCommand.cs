@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ColorBot.App.Repositories;
 using Discord.Commands;
 
 namespace ColorBot.App.Commands
 {
     public class ListCommand : CommandBase
     {
+        public ListCommand(LogMessageRepository logMessageRepository) : base(logMessageRepository)
+        {
+        }
+        
         [Command("list")]
         public async Task HandleCommandAsync()
         {
