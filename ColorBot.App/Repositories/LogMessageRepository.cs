@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ColorBot.App.Database;
@@ -13,6 +14,7 @@ namespace ColorBot.App.Repositories
 
         public static async Task<LogMessage> CreateAsync(LogMessage logMessage)
         {
+            logMessage.CreatedAt = DateTime.UtcNow;
             _context.LogMessages.Add(logMessage);
             await _context.SaveChangesAsync();
             return logMessage;
