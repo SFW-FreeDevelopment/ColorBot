@@ -63,6 +63,18 @@ namespace ColorBot.App
             int argPos = 0;
             if (message.HasStringPrefix("colorbot ", ref argPos))
             {
+                await Execute();
+                return;
+            }
+            argPos = 0;
+            if (message.HasStringPrefix("<@897551401369100358> ", ref argPos))
+            {
+                await Execute();
+                return;
+            }
+
+            async Task Execute()
+            {
                 var result = await _commands.ExecuteAsync(context, argPos, _services);
                 if (!result.IsSuccess)
                     Console.WriteLine(result.ErrorReason);
